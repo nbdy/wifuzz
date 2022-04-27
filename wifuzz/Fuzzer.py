@@ -1,5 +1,5 @@
 from runnable import Runnable
-
+from loguru import logger as log
 from scapy.all import fuzz, send
 
 
@@ -33,5 +33,5 @@ class Fuzzer(Runnable):
         for t in self.targets:
             if t is None:
                 continue
-            print("fuzzing", t)
+            log.info("Fuzzing: {}", t)
             self.fuzz(t)

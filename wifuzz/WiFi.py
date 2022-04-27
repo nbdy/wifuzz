@@ -1,12 +1,13 @@
-from wifuzz.Fuzzer import Fuzzer
-from wifuzz.Scanner import Scanner
-
 from os import system
 from time import sleep
 from scapy.layers.dot11 import *
 from scapy.all import AsyncSniffer
 from netifaces import interfaces
 from progressbar import ProgressBar
+from loguru import logger as log
+
+from wifuzz.Fuzzer import Fuzzer
+from wifuzz.Scanner import Scanner
 
 
 def get_interface():
@@ -18,14 +19,13 @@ def get_interface():
 
 def set_monitor_mode(interface, enable=True):
     if interface is None:
-        print("interface is none")
-        return None
+        log.warning("Interface not found!")
     if enable:
-        print("enabling monitor mode on", interface)
+        log.info("Enabling monitor mode on '{}'.", interface)
         system("airmon-ng start %s >/dev/null 2>&1" % interface)
         return interface + "mon"
     else:
-        print("disabling monitor mode on", interface)
+        log.info("Disabling monitor mode on '{}'.", interface)
         system("airmon-ng stop %s >/dev/null 2>&1" % interface)
         return interface[0:-3]
 
