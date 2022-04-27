@@ -1,36 +1,12 @@
-#!/usr/bin/python3
-
 from os import geteuid
 from sys import argv
-from time import sleep
 from terminaltables import AsciiTable
 
-from libs import Configuration, start_thread_kbi, create_mac_table, validate_mac
-from libs.runnable import Runnable
-
-
-class ADBFuzzer(Runnable):
-    adb_devices = None
-    fuzzers = []
-
-    def __init__(self, adb_devices, fuzzers):
-        Runnable.__init__(self)
-        self.adb_devices = adb_devices
-        self.fuzzers = fuzzers
-
-    def run(self) -> None:
-        for f in self.fuzzers:
-            f.start()
-        while self.do_run:
-            for ad in self.adb_devices.devices:
-                ad.start_logcat()
-                ad.crashes.show()
-            sleep(1)
-
-    def stop(self):
-        self.do_run = False
-        for ad in self.adb_devices.devices:
-            ad.stop_logcat()
+from wifuzz.Config import Configuration
+from wifuzz.ADBFuzzer import ADBFuzzer
+from wifuzz.Utils import start_thread_kbi, create_mac_table, validate_mac
+from wifuzz.BT import BluetoothFuzzer
+from wifuzz.WiFi import WiFiFuzzer, set_monitor_mode
 
 
 class Main(object):
@@ -53,7 +29,7 @@ class Main(object):
     @staticmethod
     def scan():
         if c.bt:
-            from libs import BluetoothScanner
+            from wifuzz.BT import BluetoothScanner
             if not c.iface_bt:
                 print("no bluetooth interface found")
                 exit()
@@ -62,7 +38,7 @@ class Main(object):
             start_thread_kbi(bts)
             print(AsciiTable(create_mac_table("bluetooth", bts.found, c.mac_lookup)).table)
         if c.wifi:
-            from libs import WiFiScanner
+            from wifuzz.WiFi import WiFiScanner
             if not c.iface_wl:
                 print("no wifi interface found")
                 exit()
@@ -77,13 +53,11 @@ class Main(object):
             f = ADBFuzzer(c.adb_devices, [])
             if c.wifi:
                 print("creating wifi fuzzer with interface", c.iface_wl)
-                from libs import WiFiFuzzer
                 _ = WiFiFuzzer(c.iface_wl)
                 _.targets = c.targets_wifi
                 f.fuzzers.append(_)
             if c.bt:
                 print("creating bluetooth fuzzer with interface", c.iface_bt)
-                from libs import BluetoothFuzzer
                 _ = BluetoothFuzzer(c.iface_bt)
                 _.targets.append(c.targets_bt)
                 f.fuzzers.append(_)
@@ -118,7 +92,6 @@ if __name__ == '__main__':
         create_mac_table("mac_lookup", ["ff:ff:ff:ff:ff:ff"])
 
     if c.wifi:
-        from libs import set_monitor_mode
         c.iface_wl = set_monitor_mode(c.iface_wl)
 
     if c.scan:

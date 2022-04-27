@@ -1,6 +1,6 @@
-from .wifi import get_interface as get_wifi_interface
-from .bt import get_interface as get_bt_interface
-from .adb import Devices
+from wifuzz.WiFi import get_interface as get_wifi_interface
+from wifuzz.BT import get_interface as get_bt_interface
+from wifuzz.ADB import Devices
 
 
 class Configuration(object):

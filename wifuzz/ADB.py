@@ -1,6 +1,5 @@
-from .runnable import Runnable
-
 from subprocess import Popen, PIPE
+from runnable import Runnable
 
 
 class Crashes(object):

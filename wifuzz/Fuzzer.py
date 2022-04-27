@@ -1,4 +1,4 @@
-from .runnable import Runnable
+from runnable import Runnable
 
 from scapy.all import fuzz, send
 

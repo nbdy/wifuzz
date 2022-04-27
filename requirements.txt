@@ -1,6 +1,8 @@
 scapy
+pyrunnable
 netifaces
 mac_vendor_lookup
 terminaltables
 progressbar2
-git+https://github.com/smthnspcl/pybt
+btpy
+loguru

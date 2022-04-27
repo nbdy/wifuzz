@@ -1,5 +1,5 @@
-from .fuzzer import Fuzzer
-from .scanner import Scanner
+from wifuzz.Fuzzer import Fuzzer
+from wifuzz.Scanner import Scanner
 
 from os import system
 from time import sleep
