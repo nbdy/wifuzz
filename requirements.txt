@@ -4,5 +4,5 @@ netifaces
 mac_vendor_lookup
 terminaltables
 progressbar2
-btpy
+btpy==2.0.3
 loguru

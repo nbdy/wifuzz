@@ -79,9 +79,7 @@ class Main(object):
         exit()
 
 
-if __name__ == '__main__':
-    # Main.test()
-
+def main():
     c = Configuration.parse(argv)
 
     if geteuid() != 0:
@@ -104,3 +102,8 @@ if __name__ == '__main__':
         c.iface_wl = set_monitor_mode(c.iface_wl, False)
 
     print("done")
+
+
+if __name__ == '__main__':
+    # Main.test()
+    main()
