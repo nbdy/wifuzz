@@ -2,7 +2,7 @@
 ### why?
 wanted my own wireless fuzzer
 
-### whats inside?
+### what's inside?
 [scapy](https://scapy.net/) for packet generation / sending<br>
 [netifaces](https://pypi.org/project/netifaces/) to automatically get a wifi interface if none supplied<br>
 [mac_vendor_lookup](https://pypi.org/project/mac-vendor-lookup/) for ...<br>
@@ -14,7 +14,7 @@ wanted my own wireless fuzzer
 #### ... get started
 ```shell script
 sudo apt install aircrack-ng
-pip3 install -r requirements.txt
+pip3 install wifuzz # or git+https://github.com/nbdy/wifuzz
 ```
 #### ... to use it
 ```shell script
@@ -38,5 +38,3 @@ sudo ./wifuzz.py -m -s -w
 #### interfaces are found automatically
 though the first available is always used<br>
 ex: wlan0; hci0
-
-#### 
