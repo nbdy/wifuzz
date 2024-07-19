@@ -1,4 +1,7 @@
+# ! the pypi package is outdated and will not be updated !
+
 ## wifuzz
+
 ### why?
 wanted my own wireless fuzzer
 
@@ -14,7 +17,7 @@ wanted my own wireless fuzzer
 #### ... get started
 ```shell script
 sudo apt install aircrack-ng
-pip3 install wifuzz # or git+https://github.com/nbdy/wifuzz
+pip3 install git+https://github.com/nbdy/wifuzz
 ```
 #### ... to use it
 ```shell script
