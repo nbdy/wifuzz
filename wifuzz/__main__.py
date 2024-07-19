@@ -9,101 +9,100 @@ from wifuzz.BT import BluetoothFuzzer
 from wifuzz.WiFi import WiFiFuzzer, set_monitor_mode
 
 
-class Main(object):
-    @staticmethod
-    def choose_targets():
-        r = []
-        print("enter macs you want to target")
-        print("ctrl + c to start fuzzing")
-        try:
-            while True:
-                i = input("> ")
-                if not validate_mac(i):
-                    print(i, "is not a mac address")
-                else:
-                    r.append(i)
-        except KeyboardInterrupt:
-            print()
-            return r
+def choose_targets():
+    r = []
+    print("enter macs you want to target")
+    print("ctrl + c to start fuzzing")
+    try:
+        while True:
+            i = input("> ")
+            if not validate_mac(i):
+                print(i, "is not a mac address")
+            else:
+                r.append(i)
+    except KeyboardInterrupt:
+        print()
+        return r
 
-    @staticmethod
-    def scan():
-        if c.bt:
+
+class Manager:
+    def __init__(self, configuration: Configuration):
+        self.configuration = configuration
+
+    def scan(self):
+        if self.configuration.bt:
             from wifuzz.BT import BluetoothScanner
-            if not c.iface_bt:
+            if not self.configuration.iface_bt:
                 print("no bluetooth interface found")
                 exit()
-            bts = BluetoothScanner(c.iface_bt)
+            bts = BluetoothScanner(self.configuration.iface_bt)
             print("scanning for bluetooth macs")
             start_thread_kbi(bts)
-            print(AsciiTable(create_mac_table("bluetooth", bts.found, c.mac_lookup)).table)
-        if c.wifi:
+            print(AsciiTable(create_mac_table("bluetooth", bts.found, self.configuration.mac_lookup)).table)
+        if self.configuration.wifi:
             from wifuzz.WiFi import WiFiScanner
-            if not c.iface_wl:
+            if not self.configuration.iface_wl:
                 print("no wifi interface found")
                 exit()
-            wts = WiFiScanner(c.iface_wl)
+            wts = WiFiScanner(self.configuration.iface_wl)
             print("scanning for wifi macs")
             start_thread_kbi(wts)
-            print(AsciiTable(create_mac_table("wifi", wts.found, c.mac_lookup)).table)
+            print(AsciiTable(create_mac_table("wifi", wts.found, self.configuration.mac_lookup)).table)
 
-    @staticmethod
-    def fuzz():
-        if c.adb:
-            f = ADBFuzzer(c.adb_devices, [])
-            if c.wifi:
-                print("creating wifi fuzzer with interface", c.iface_wl)
-                _ = WiFiFuzzer(c.iface_wl)
-                _.targets = c.targets_wifi
-                f.fuzzers.append(_)
-            if c.bt:
-                print("creating bluetooth fuzzer with interface", c.iface_bt)
-                _ = BluetoothFuzzer(c.iface_bt)
-                _.targets.append(c.targets_bt)
-                f.fuzzers.append(_)
+        self.configuration.targets = choose_targets()
+
+    def fuzz(self):
+        if self.configuration.adb:
+            adb_fuzzer = ADBFuzzer(self.configuration.adb_devices, [])
+            if self.configuration.wifi:
+                print("creating wifi fuzzer with interface", self.configuration.iface_wl)
+                fuzzer = WiFiFuzzer(self.configuration.iface_wl)
+                fuzzer.targets = self.configuration.targets_wifi
+                adb_fuzzer.fuzzers.append(fuzzer)
+            if self.configuration.bt:
+                print("creating bluetooth fuzzer with interface", self.configuration.iface_bt)
+                fuzzer = BluetoothFuzzer(self.configuration.iface_bt)
+                fuzzer.targets.append(self.configuration.targets_bt)
+                adb_fuzzer.fuzzers.append(fuzzer)
 
             try:
                 print("running")
-                f.start()
-                f.join()
+                adb_fuzzer.start()
+                adb_fuzzer.join()
             except KeyboardInterrupt:
                 print("stopping..")
-                f.stop()
+                adb_fuzzer.stop()
                 print("stopped")
         else:
             print("only adb error collection is implemented yet")
             pass  # todo server/client stuff to monitor processes on other machines
 
-    @staticmethod
-    def test():
-        exit()
-
 
 def main():
-    c = Configuration.parse(argv)
-
     if geteuid() != 0:
         print("i need privileges")
         exit()
 
-    if c.mac_lookup:
+    configuration = Configuration.parse(argv)
+
+    if configuration.mac_lookup:
         create_mac_table("mac_lookup", ["ff:ff:ff:ff:ff:ff"])
 
-    if c.wifi:
-        c.iface_wl = set_monitor_mode(c.iface_wl)
+    if configuration.wifi:
+        configuration.iface_wl = set_monitor_mode(configuration.iface_wl)
 
-    if c.scan:
-        Main.scan()
-        c.targets = Main.choose_targets()
+    manager = Manager(configuration)
 
-    Main.fuzz()
+    if configuration.scan:
+        manager.scan()
 
-    if c.wifi:
-        c.iface_wl = set_monitor_mode(c.iface_wl, False)
+    manager.fuzz()
+
+    if configuration.wifi:
+        configuration.iface_wl = set_monitor_mode(configuration.iface_wl, False)
 
     print("done")
 
 
 if __name__ == '__main__':
-    # Main.test()
     main()
