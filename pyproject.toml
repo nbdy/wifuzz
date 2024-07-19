@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project]
+name = "wifuzz"
+version = "0.2"
+requires-python = ">= 3.11"
+authors = [{name = "nbdy"}]
+maintainers = [{name = "nbdy"}]
+readme = "README.md"
+license = {text = "MIT License"}
+keywords = ["wireless", "fuzzing"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "scapy",
+    "pyrunnable",
+    "netifaces",
+    "mac_vendor_lookup",
+    "terminaltables",
+    "progressbar2",
+    "btpy @ git+https://github.com/nbdy/btpy",
+    "loguru",
+]
+
+[project.urls]
+Homepage = "https://github.com/nbdy/wifuzz"
+Documentation = "https://github.com/nbdy/wifuzz/wiki"
+Repository = "https://github.com/nbdy/wifuzz.git"
+Issues = "https://github.com/nbdy/wifuzz/issues"
+Changelog = "https://github.com/nbdy/wifuzz/blob/main/CHANGELOG.md"
+
+[project.scripts]
+vidscaler = "wifuzz.__main__:main"

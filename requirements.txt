@@ -1,8 +1,0 @@
-scapy
-pyrunnable
-netifaces
-mac_vendor_lookup
-terminaltables
-progressbar2
-btpy==2.0.3
-loguru
