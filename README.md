@@ -1,4 +1,4 @@
-# ! the pypi package is outdated and will not be updated !
+# the pypi package is outdated and will not be updated
 
 ## wifuzz
 
